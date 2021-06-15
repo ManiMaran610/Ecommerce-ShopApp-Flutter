@@ -20,7 +20,10 @@ class CartScreen extends StatelessWidget {
             margin: EdgeInsets.all(15),
             child: Row(
               children: [
-                Text("Total"),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Total"),
+                ),
                 SizedBox(width: 20),
                 Chip(
                   label: Text(
