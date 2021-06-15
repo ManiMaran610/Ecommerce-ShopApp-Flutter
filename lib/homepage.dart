@@ -3,6 +3,7 @@ import 'package:flutter_app1/CartScreen.dart';
 
 import 'package:flutter_app1/GridviewBuilder.dart';
 import 'package:flutter_app1/Providers/cart.dart';
+import 'package:flutter_app1/widgets/AppDrawer.dart';
 import 'package:flutter_app1/widgets/badge.dart';
 import 'package:provider/provider.dart';
 
@@ -22,14 +23,6 @@ class _ProductHomeScreenState extends State<ProductHomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Shop App"),
-        leading: IconButton(
-          icon: Icon(Icons.favorite),
-          onPressed: () {
-            setState(() {
-              widget.showFav = true;
-            });
-          },
-        ),
         actions: [
           PopupMenuButton(
             icon: Icon(Icons.more_vert),
@@ -64,6 +57,7 @@ class _ProductHomeScreenState extends State<ProductHomeScreen> {
               color: Colors.red)
         ],
       ),
+      drawer: AppDrawer(),
       body: GridViewBuild(widget.showFav),
     );
   }
