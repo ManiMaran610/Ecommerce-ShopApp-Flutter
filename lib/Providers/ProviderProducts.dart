@@ -48,13 +48,19 @@ class Products with ChangeNotifier {
     return _items.where((element) => element.isFavorite == true).toList();
   }
 
-  showFav() {
-    showFavoritesOnly = true;
+  void addproducts(Product product) {
+    final newProduct = Product(
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        id: DateTime.now().toString());
+    _items.add(product);
     notifyListeners();
   }
 
-  showAll() {
-    showFavoritesOnly = false;
+  void deleteItem(String productId) {
+    _items.removeWhere((element) => element.id == productId);
     notifyListeners();
   }
 

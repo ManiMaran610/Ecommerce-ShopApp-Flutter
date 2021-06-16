@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app1/EditProducts.dart';
 import 'package:flutter_app1/Providers/ProviderProducts.dart';
+import 'package:flutter_app1/modals/Products.dart';
 import 'package:provider/provider.dart';
 
 class UserProducts extends StatelessWidget {
@@ -13,6 +15,13 @@ class UserProducts extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('User Products'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(EditScreen.routename);
+              },
+              icon: Icon(Icons.add)),
+        ],
       ),
       body: ListView.builder(
           itemCount: ProductList.item.length,
@@ -31,7 +40,11 @@ class UserProducts extends StatelessWidget {
                     Text(products[i].title),
                     Spacer(),
                     IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
-                    IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+                    IconButton(
+                        onPressed: () {
+                          ProductList.deleteItem(products[i].id);
+                        },
+                        icon: Icon(Icons.delete)),
                   ],
                 ),
               ),

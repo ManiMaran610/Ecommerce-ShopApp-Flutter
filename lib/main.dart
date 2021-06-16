@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app1/CartScreen.dart';
+import 'package:flutter_app1/EditProducts.dart';
 import 'package:flutter_app1/ProductDetail.dart';
 import 'package:flutter_app1/Providers/ProviderProducts.dart';
 import 'package:flutter_app1/Providers/cart.dart';
@@ -41,7 +42,8 @@ class _MyAppState extends State<MyApp> {
         routes: {
           ProductDetail.routename: (ctx) => ProductDetail(),
           CartScreen.routename: (ctx) => CartScreen(),
-          UserProducts.routename: (ctx) => UserProducts()
+          UserProducts.routename: (ctx) => UserProducts(),
+          EditScreen.routename: (ctx) => EditScreen()
         },
       ),
     );

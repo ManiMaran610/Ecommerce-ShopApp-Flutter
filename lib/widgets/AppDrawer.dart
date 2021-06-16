@@ -12,7 +12,7 @@ class AppDrawer extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListTile(
-            leading: Icon(Icons.production_quantity_limits),
+            leading: Icon(Icons.shop_rounded),
             title: Text('User Products'),
             onTap: () {
               Navigator.of(context).pushNamed(UserProducts.routename);
