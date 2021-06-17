@@ -18,11 +18,11 @@ class _EditScreenState extends State<EditScreen> {
   TextEditingController _imageController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
   TextEditingController _titleController = TextEditingController();
-  TextEditingController _DiscriptionController = TextEditingController();
+  TextEditingController _discriptionController = TextEditingController();
   final _form = GlobalKey<FormState>();
 
   var _editedproducts =
-      Product(title: '', description: '', price: 0, imageUrl: '', id: '');
+      Product(title: '', description: '', price: 0, imageUrl: '', id: 'a');
   @override
   void initState() {
     _imageFocusNode.addListener(UpdateImg);
@@ -43,23 +43,47 @@ class _EditScreenState extends State<EditScreen> {
     }
   }
 
+  var _isInit = true;
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      final productId = ModalRoute.of(context)!.settings.arguments as String;
+      print(productId);
+      if (productId.isEmpty) {
+        print('empty');
+      } else {
+        final product =
+            Provider.of<Products>(context, listen: false).findbyId(productId);
+        _editedproducts = product;
+        _titleController.text = _editedproducts.title;
+        _priceController.text = _editedproducts.price.toString();
+        _discriptionController.text = _editedproducts.description;
+        _imageController.text = _editedproducts.imageUrl;
+      }
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     final addProduct = Provider.of<Products>(context);
     void _saveForm() {
       if (_form.currentState!.validate()) {
-        print(_form.currentState!.validate().toString());
         _form.currentState!.save();
-        _editedproducts = Product(
-            title: _titleController.text,
-            description: _DiscriptionController.text,
-            price: double.parse(_priceController.text),
-            imageUrl: _imageController.text,
-            id: _editedproducts.id);
-        addProduct.addproducts(_editedproducts);
 
-        Navigator.of(context).pop();
+        _editedproducts.id != 'a'
+            ? addProduct.updateProduct(_editedproducts.id, _editedproducts)
+            : _editedproducts = Product(
+                title: _titleController.text,
+                description: _discriptionController.text,
+                price: double.parse(_priceController.text),
+                imageUrl: _imageController.text,
+                id: DateTime.now().toString());
+        addProduct.addproducts(_editedproducts);
       }
+      Navigator.of(context).pop();
 
       print(_editedproducts.title);
       print(_editedproducts.description);
@@ -111,7 +135,7 @@ class _EditScreenState extends State<EditScreen> {
                 ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Discription'),
-                  controller: _DiscriptionController,
+                  controller: _discriptionController,
                   keyboardType: TextInputType.multiline,
                   maxLines: 3,
                   textInputAction: TextInputAction.next,
