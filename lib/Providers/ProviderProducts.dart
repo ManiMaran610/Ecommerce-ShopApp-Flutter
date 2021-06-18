@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter_app1/modals/Products.dart';
 
 class Products with ChangeNotifier {
@@ -48,15 +52,31 @@ class Products with ChangeNotifier {
     return _items.where((element) => element.isFavorite == true).toList();
   }
 
-  void addproducts(Product product) {
-    final newProduct = Product(
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        imageUrl: product.imageUrl,
-        id: DateTime.now().toString());
-    _items.add(product);
-    notifyListeners();
+  Future<void> addproducts(Product product) {
+    const url =
+        'https://email-authentication-74444.firebaseio.com/Products.json';
+    return http
+        .post(Uri.parse(url),
+            body: json.encode({
+              'title': product.title,
+              'price': product.price,
+              'discription': product.description,
+              'imageUrl': product.imageUrl,
+            }))
+        .then((response) {
+      // dynamic res = json.decode(response.body);
+
+      final newProduct = Product(
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imageUrl: product.imageUrl,
+          id: json.decode(response.body)['name']);
+      _items.add(newProduct);
+      notifyListeners();
+
+      // print(json.decode(response.body)['title']);
+    });
   }
 
   void deleteItem(String productId) {
@@ -69,12 +89,14 @@ class Products with ChangeNotifier {
   }
 
   void updateProduct(String id, Product newProduct) {
-    final prodIndex = _items.indexWhere((prod) => prod.id == id);
-    if (prodIndex >= 0) {
-      _items[prodIndex] = newProduct;
-      notifyListeners();
-    } else {
-      print('...');
+    if (_items.contains(id)) {
+      final prodIndex = _items.indexWhere((prod) => prod.id == id);
+      if (prodIndex >= 0) {
+        _items[prodIndex] = newProduct;
+        notifyListeners();
+      } else {
+        print('...');
+      }
     }
   }
 }

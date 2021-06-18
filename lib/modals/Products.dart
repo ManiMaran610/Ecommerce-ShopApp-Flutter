@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 class Product with ChangeNotifier {
-  String id;
+  dynamic id;
   String title;
   String description;
   double price;

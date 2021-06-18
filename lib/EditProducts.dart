@@ -21,6 +21,8 @@ class _EditScreenState extends State<EditScreen> {
   TextEditingController _discriptionController = TextEditingController();
   final _form = GlobalKey<FormState>();
 
+  bool isLoading = false;
+
   var _editedproducts =
       Product(title: '', description: '', price: 0, imageUrl: '', id: 'a');
   @override
@@ -46,25 +48,25 @@ class _EditScreenState extends State<EditScreen> {
   var _isInit = true;
 
   @override
-  void didChangeDependencies() {
-    if (_isInit) {
-      final productId = ModalRoute.of(context)!.settings.arguments as String;
-      print(productId);
-      if (productId.isEmpty) {
-        print('empty');
-      } else {
-        final product =
-            Provider.of<Products>(context, listen: false).findbyId(productId);
-        _editedproducts = product;
-        _titleController.text = _editedproducts.title;
-        _priceController.text = _editedproducts.price.toString();
-        _discriptionController.text = _editedproducts.description;
-        _imageController.text = _editedproducts.imageUrl;
-      }
-    }
-    _isInit = false;
-    super.didChangeDependencies();
-  }
+  // void didChangeDependencies() {
+  //   if (_isInit) {
+  //     final productId = ModalRoute.of(context)!.settings.arguments as String;
+  //     print(productId);
+  //     if (productId.isEmpty) {
+  //       print('empty');
+  //     } else {
+  //       final product =
+  //           Provider.of<Products>(context, listen: false).findbyId(productId);
+  //       _editedproducts = product;
+  //       _titleController.text = _editedproducts.title;
+  //       _priceController.text = _editedproducts.price.toString();
+  //       _discriptionController.text = _editedproducts.description;
+  //       _imageController.text = _editedproducts.imageUrl;
+  //     }
+  //   }
+  //   _isInit = false;
+  //   super.didChangeDependencies();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -72,18 +74,26 @@ class _EditScreenState extends State<EditScreen> {
     void _saveForm() {
       if (_form.currentState!.validate()) {
         _form.currentState!.save();
+        setState(() {
+          isLoading = true;
+        });
 
-        _editedproducts.id != 'a'
-            ? addProduct.updateProduct(_editedproducts.id, _editedproducts)
-            : _editedproducts = Product(
-                title: _titleController.text,
-                description: _discriptionController.text,
-                price: double.parse(_priceController.text),
-                imageUrl: _imageController.text,
-                id: DateTime.now().toString());
-        addProduct.addproducts(_editedproducts);
+        // _editedproducts.id != 'a'
+        //     ? addProduct.updateProduct(_editedproducts.id, _editedproducts)
+        // :
+        _editedproducts = Product(
+            title: _titleController.text,
+            description: _discriptionController.text,
+            price: double.parse(_priceController.text),
+            imageUrl: _imageController.text,
+            id: DateTime.now().toString());
+        addProduct.addproducts(_editedproducts).then((value) {
+          setState(() {
+            isLoading = false;
+          });
+          Navigator.of(context).pop();
+        });
       }
-      Navigator.of(context).pop();
 
       print(_editedproducts.title);
       print(_editedproducts.description);
@@ -102,98 +112,99 @@ class _EditScreenState extends State<EditScreen> {
         ],
       ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(14.0),
-          child: Form(
-            key: _form,
-            child: ListView(
-              children: [
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Title'),
-                  controller: _titleController,
-                  keyboardType: TextInputType.name,
-                  textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Provide a title First ";
-                    }
-                  },
-                ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Price'),
-                  controller: _priceController,
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.next,
-                  validator: (val) {
-                    if (val!.isEmpty) {
-                      return 'Enter a Price';
-                    }
-                    if (int.parse(val) <= 0) {
-                      return 'Price should be greater than 0';
-                    }
-                  },
-                ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Discription'),
-                  controller: _discriptionController,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: 3,
-                  textInputAction: TextInputAction.next,
-                  validator: (val) {
-                    if (val!.isEmpty) {
-                      return 'Discription should not be empty';
-                    }
-                  },
-                ),
-                SizedBox(height: 10),
-                Row(
-                  children: [
-                    Container(
-                      height: 54,
-                      width: 95,
-                      child: _imageController.text.isEmpty
-                          ? Text('Enter Url')
-                          : FittedBox(
-                              child: Image.network(_imageController.text),
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: TextFormField(
-                        decoration: InputDecoration(labelText: 'ImageUrl'),
-                        keyboardType: TextInputType.url,
-                        controller: _imageController,
-                        textInputAction: TextInputAction.none,
-                        focusNode: _imageFocusNode,
-                        onFieldSubmitted: (val) {
-                          // _saveForm();
-                        },
-                        validator: (val) {
-                          if (val!.isEmpty) {
-                            return 'Enter a Image Url';
-                          }
-                          if (!val.contains('http')) {
-                            return 'Enter a valid url';
+        child: isLoading
+            ? CircularProgressIndicator()
+            : Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: Form(
+                  key: _form,
+                  child: ListView(
+                    children: [
+                      TextFormField(
+                        decoration: InputDecoration(labelText: 'Title'),
+                        controller: _titleController,
+                        keyboardType: TextInputType.name,
+                        textInputAction: TextInputAction.next,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Provide a title First ";
                           }
                         },
                       ),
-                    ),
-                  ],
+                      TextFormField(
+                        decoration: InputDecoration(labelText: 'Price'),
+                        controller: _priceController,
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.next,
+                        validator: (val) {
+                          if (val!.isEmpty) {
+                            return 'Enter a Price';
+                          }
+                          if (int.parse(val) <= 0) {
+                            return 'Price should be greater than 0';
+                          }
+                        },
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(labelText: 'Discription'),
+                        controller: _discriptionController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 3,
+                        textInputAction: TextInputAction.next,
+                        validator: (val) {
+                          if (val!.isEmpty) {
+                            return 'Discription should not be empty';
+                          }
+                        },
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Container(
+                            height: 54,
+                            width: 95,
+                            child: _imageController.text.isEmpty
+                                ? Text('Enter Url')
+                                : FittedBox(
+                                    child: Image.network(_imageController.text),
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: TextFormField(
+                              decoration:
+                                  InputDecoration(labelText: 'ImageUrl'),
+                              keyboardType: TextInputType.url,
+                              controller: _imageController,
+                              textInputAction: TextInputAction.none,
+                              focusNode: _imageFocusNode,
+                              onFieldSubmitted: (val) {
+                                // _saveForm();
+                              },
+                              validator: (val) {
+                                if (val!.isEmpty) {
+                                  return 'Enter a Image Url';
+                                }
+                                if (!val.contains('http')) {
+                                  return 'Enter a valid url';
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      GestureDetector(
+                        child: Chip(label: Text('Submit')),
+                        onTap: () {
+                          _saveForm();
+                          // Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                GestureDetector(
-                  child: Chip(label: Text('Submit')),
-                  onTap: () {
-                    _saveForm();
-                    // Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }

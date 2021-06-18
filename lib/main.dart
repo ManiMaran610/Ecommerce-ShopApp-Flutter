@@ -7,6 +7,7 @@ import 'package:flutter_app1/Providers/ProviderProducts.dart';
 import 'package:flutter_app1/Providers/cart.dart';
 import 'package:flutter_app1/homepage.dart';
 import 'package:flutter_app1/widgets/UserProducts.dart';
+
 import 'package:provider/provider.dart';
 
 import 'modals/Products.dart';
@@ -43,7 +44,7 @@ class _MyAppState extends State<MyApp> {
           ProductDetail.routename: (ctx) => ProductDetail(),
           CartScreen.routename: (ctx) => CartScreen(),
           UserProducts.routename: (ctx) => UserProducts(),
-          EditScreen.routename: (ctx) => EditScreen()
+          EditScreen.routename: (ctx) => EditScreen(),
         },
       ),
     );
