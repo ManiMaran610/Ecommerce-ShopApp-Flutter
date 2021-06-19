@@ -24,7 +24,7 @@ class _EditScreenState extends State<EditScreen> {
   bool isLoading = false;
 
   var _editedproducts =
-      Product(title: '', description: '', price: 0, imageUrl: '', id: 'a');
+      Product(title: '', description: '', price: 0, imageUrl: '', id: '');
   @override
   void initState() {
     _imageFocusNode.addListener(UpdateImg);
@@ -33,6 +33,7 @@ class _EditScreenState extends State<EditScreen> {
     super.initState();
   }
 
+  @override
   void dispose() {
     _imageController.removeListener(UpdateImg);
     _imageFocusNode.dispose();
@@ -45,9 +46,38 @@ class _EditScreenState extends State<EditScreen> {
     }
   }
 
-  var _isInit = true;
+  void _saveForm() {
+    final products = Provider.of<Products>(context, listen: false);
+    if (_form.currentState!.validate()) {
+      _form.currentState!.save();
+      setState(() {
+        isLoading = true;
+      });
 
-  @override
+      // _editedproducts.id.isNotEmpty
+      //     ? products.updateProduct(_editedproducts.id, _editedproducts)
+      //     :
+      _editedproducts = Product(
+          title: _titleController.text,
+          description: _discriptionController.text,
+          price: int.parse(_priceController.text),
+          imageUrl: _imageController.text,
+          id: DateTime.now().toString());
+      products.addproducts(_editedproducts).then((value) {
+        setState(() {
+          isLoading = false;
+        });
+        Navigator.of(context).pop();
+      });
+    }
+
+    print(_editedproducts.title);
+    print(_editedproducts.description);
+    print(_editedproducts.price);
+  }
+
+  // var _isInit = true;
+  // @override
   // void didChangeDependencies() {
   //   if (_isInit) {
   //     final productId = ModalRoute.of(context)!.settings.arguments as String;
@@ -70,36 +100,6 @@ class _EditScreenState extends State<EditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final addProduct = Provider.of<Products>(context);
-    void _saveForm() {
-      if (_form.currentState!.validate()) {
-        _form.currentState!.save();
-        setState(() {
-          isLoading = true;
-        });
-
-        // _editedproducts.id != 'a'
-        //     ? addProduct.updateProduct(_editedproducts.id, _editedproducts)
-        // :
-        _editedproducts = Product(
-            title: _titleController.text,
-            description: _discriptionController.text,
-            price: double.parse(_priceController.text),
-            imageUrl: _imageController.text,
-            id: DateTime.now().toString());
-        addProduct.addproducts(_editedproducts).then((value) {
-          setState(() {
-            isLoading = false;
-          });
-          Navigator.of(context).pop();
-        });
-      }
-
-      print(_editedproducts.title);
-      print(_editedproducts.description);
-      print(_editedproducts.price);
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Products'),

@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
 
 class Product with ChangeNotifier {
-  dynamic id;
+  String id;
   String title;
   String description;
-  double price;
+  int price;
   String imageUrl;
   bool isFavorite = false;
 

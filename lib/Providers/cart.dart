@@ -4,7 +4,7 @@ import 'package:flutter_app1/widgets/cart_item.dart';
 class cartItem with ChangeNotifier {
   final String id;
   final String title;
-  final double price;
+  final int price;
   final int quantity;
 
   cartItem(
@@ -33,7 +33,7 @@ class Cart with ChangeNotifier {
     return t;
   }
 
-  void additem(String productId, double price, String title) {
+  void additem(String productId, int price, String title) {
     if (_items.containsKey(productId)) {
       _items.update(
           productId,

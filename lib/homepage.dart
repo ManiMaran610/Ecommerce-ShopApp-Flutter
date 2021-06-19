@@ -6,6 +6,9 @@ import 'package:flutter_app1/Providers/cart.dart';
 import 'package:flutter_app1/widgets/AppDrawer.dart';
 import 'package:flutter_app1/widgets/badge.dart';
 import 'package:provider/provider.dart';
+import 'package:lottie/lottie.dart';
+
+import 'Providers/ProviderProducts.dart';
 
 class ProductHomeScreen extends StatefulWidget {
   bool showFav = false;
@@ -17,6 +20,23 @@ class ProductHomeScreen extends StatefulWidget {
 enum FilterOptions { favourite, showall }
 
 class _ProductHomeScreenState extends State<ProductHomeScreen> {
+  var isInit = true;
+  var isLoading = false;
+  void didChangeDependencies() {
+    if (isInit) {
+      setState(() {
+        isLoading = true;
+      });
+      Provider.of<Products>(context).fetchData().then((value) {
+        setState(() {
+          isLoading = false;
+        });
+      });
+    }
+    isInit = false;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     final cartItem = Provider.of<Cart>(context);
@@ -58,7 +78,14 @@ class _ProductHomeScreenState extends State<ProductHomeScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: GridViewBuild(widget.showFav),
+      body: isLoading
+          ? Center(
+              child: Container(
+              height: 155,
+              child: Lottie.network(
+                  'https://assets3.lottiefiles.com/packages/lf20_ObshHL.json'),
+            ))
+          : GridViewBuild(widget.showFav),
     );
   }
 }
